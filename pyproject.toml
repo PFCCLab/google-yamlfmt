@@ -1,7 +1,7 @@
 [project]
-name = "pre-commit-yamlfmt"
+name = "google-yamlfmt"
 version = "0.16.0"
-description = "Add your description here"
+description = "A tool for formatting YAML files, yamlfmt from Google: https://github.com/google/yamlfmt"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
