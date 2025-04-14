@@ -10,3 +10,4 @@ wheels/
 .venv
 src/yamlfmt/_version.py
 .python-version
+.ruff_cache

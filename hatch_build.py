@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import os
 import platform
-import sys
-from hatchling.builders.hooks.plugin.interface import BuildHookInterface
-from typing import Any
-from pathlib import Path
-import tempfile
-from urllib import request
-import tarfile
 import shutil
+import sys
+import tarfile
+import tempfile
+from pathlib import Path
+from typing import Any
+from urllib import request
+
+from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 
 class SpecialBuildHook(BuildHookInterface):
@@ -29,9 +32,7 @@ class SpecialBuildHook(BuildHookInterface):
         if target_arch not in ["x86_64", "arm64", "aarch64", "i386"]:
             raise NotImplementedError(f"no support arch: {target_arch}")
 
-        if not any(
-            os_name in target_os_info for os_name in ["linux", "darwin", "macos", "win"]
-        ):
+        if not any(os_name in target_os_info for os_name in ["linux", "darwin", "macos", "win"]):
             raise NotImplementedError(f"no support os: {target_os_info}")
 
         # 检查系统和架构的组合
@@ -59,9 +60,7 @@ class SpecialBuildHook(BuildHookInterface):
         # TODO: 加一个 sum 校验
         bin_path = self.temp_dir / self.BIN_NAME
         assert bin_path.is_file(), f"{self.BIN_NAME} not found"
-        build_data["force_include"][f"{bin_path.resolve()}"] = (
-            f"yamlfmt/{self.BIN_NAME}"
-        )
+        build_data["force_include"][f"{bin_path.resolve()}"] = f"yamlfmt/{self.BIN_NAME}"
 
     def download_yamlfmt(self, target_os_info: str, target_arch: str) -> None:
         """Download the yamlfmt binary for the specified OS and architecture."""
@@ -74,15 +73,11 @@ class SpecialBuildHook(BuildHookInterface):
             "amd64": "x86_64",
             "aarch64": "arm64",
         }
-        file_path = (
-            self.temp_dir / f"{self.BIN_NAME}_{target_os_info}_{target_arch}.tar.gz"
-        )
+        file_path = self.temp_dir / f"{self.BIN_NAME}_{target_os_info}_{target_arch}.tar.gz"
         request.urlretrieve(
             self.YAMLFMT_REPO.format(
                 version=self.metadata.version,
-                target_os_info=target_os_info_to_go_os.get(
-                    target_os_info, target_os_info
-                ),
+                target_os_info=target_os_info_to_go_os.get(target_os_info, target_os_info),
                 target_arch=target_arch_to_go_arch.get(target_arch, target_arch),
             ),
             file_path,
