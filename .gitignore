@@ -1,0 +1,12 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+src/yamlfmt/_version.py
+.python-version
