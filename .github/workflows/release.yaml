@@ -15,7 +15,7 @@ jobs:
           - {"runner": "ubuntu-latest", "os": "linux", "target": "x86_64"}
           - {"runner": "ubuntu-latest", "os": "linux", "target": "aarch64"}
           - {"runner": "ubuntu-latest", "os": "linux", "target": "i386"}
-          - {"runner": "windows-latest", "os": "win", "target": "amd64"}
+          - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
           - {"runner": "windows-latest", "os": "win", "target": "arm64"}
           - {"runner": "windows-latest", "os": "win", "target": "i386"}
           - {"runner": "macos-latest", "os": "mac", "target": "x86_64"}
@@ -56,7 +56,7 @@ jobs:
           - {"runner": "ubuntu-latest", "os": "linux", "target": "x86_64"}
           - {"runner": "ubuntu-latest", "os": "linux", "target": "aarch64"}
           - {"runner": "ubuntu-latest", "os": "linux", "target": "i386"}
-          - {"runner": "windows-latest", "os": "win", "target": "amd64"}
+          - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
           - {"runner": "windows-latest", "os": "win", "target": "arm64"}
           - {"runner": "windows-latest", "os": "win", "target": "i386"}
           - {"runner": "macos-latest", "os": "mac", "target": "x86_64"}
@@ -88,7 +88,7 @@ jobs:
           - {"runner": "ubuntu-latest", "os": "linux", "target": "x86_64"}
           - {"runner": "ubuntu-latest", "os": "linux", "target": "aarch64"}
           - {"runner": "ubuntu-latest", "os": "linux", "target": "i386"}
-          - {"runner": "windows-latest", "os": "win", "target": "amd64"}
+          - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
           - {"runner": "windows-latest", "os": "win", "target": "arm64"}
           - {"runner": "windows-latest", "os": "win", "target": "i386"}
           - {"runner": "macos-latest", "os": "mac", "target": "x86_64"}
