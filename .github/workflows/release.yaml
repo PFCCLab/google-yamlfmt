@@ -18,8 +18,8 @@ jobs:
           - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
           - {"runner": "windows-latest", "os": "win", "target": "arm64"}
           - {"runner": "windows-latest", "os": "win", "target": "i386"}
-          - {"runner": "macos-latest", "os": "mac", "target": "x86_64"}
-          - {"runner": "macos-latest", "os": "mac", "target": "arm64"}
+          - {"runner": "macos-latest", "os": "macos", "target": "x86_64"}
+          - {"runner": "macos-latest", "os": "macos", "target": "arm64"}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,8 +62,8 @@ jobs:
           - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
           - {"runner": "windows-latest", "os": "win", "target": "arm64"}
           - {"runner": "windows-latest", "os": "win", "target": "i386"}
-          - {"runner": "macos-latest", "os": "mac", "target": "x86_64"}
-          - {"runner": "macos-latest", "os": "mac", "target": "arm64"}
+          - {"runner": "macos-latest", "os": "macos", "target": "x86_64"}
+          - {"runner": "macos-latest", "os": "macos", "target": "arm64"}
     steps:
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
@@ -94,8 +94,8 @@ jobs:
           - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
           - {"runner": "windows-latest", "os": "win", "target": "arm64"}
           - {"runner": "windows-latest", "os": "win", "target": "i386"}
-          - {"runner": "macos-latest", "os": "mac", "target": "x86_64"}
-          - {"runner": "macos-latest", "os": "mac", "target": "arm64"}
+          - {"runner": "macos-latest", "os": "macos", "target": "x86_64"}
+          - {"runner": "macos-latest", "os": "macos", "target": "arm64"}
     steps:
       - uses: actions/download-artifact@v4
         with:
