@@ -29,7 +29,7 @@ class SpecialBuildHook(BuildHookInterface):
         target_arch = os.environ.get("CIBW_ARCHS", platform.machine()).lower()
         target_os_info = os.environ.get("CIBW_PLATFORM", sys.platform).lower()
 
-        if target_arch not in ["x86_64", "arm64", "aarch64", "i386"]:
+        if target_arch not in ["x86_64", "arm64", "aarch64", "i386", "amd64"]:
             raise NotImplementedError(f"no support arch: {target_arch}")
 
         if not any(os_name in target_os_info for os_name in ["linux", "darwin", "macos", "win"]):
@@ -38,9 +38,14 @@ class SpecialBuildHook(BuildHookInterface):
         # 检查系统和架构的组合
         if target_os_info in ["win"] and target_arch == "x86_64":
             target_arch = "amd64"
-        elif target_os_info in ["linux"] and target_arch == "arm64":
-            target_arch = "aarch64"
+        elif target_os_info in ["linux"]:
+            if target_arch == "arm64":
+                target_arch = "aarch64"
+            elif target_arch == "amd64":
+                target_arch = "x86_64"
         if target_os_info in ["darwin", "macos"]:
+            if target_arch == "amd64":
+                target_arch = "x86_64"
             target_os_info = f"macosx_{'10_9' if target_arch == 'x86_64' else '11_0'}"
             if target_arch == "aarch64":
                 target_arch = "arm64"
