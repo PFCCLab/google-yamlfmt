@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import os
-import platform
 import re
 import shutil
-import sys
 import tarfile
 import tempfile
 from pathlib import Path
@@ -12,6 +10,18 @@ from typing import Any
 from urllib import request
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
+
+# key 为 pypi 分发的系统和架构组合
+BUILD_TARGET = {
+    ("musllinux_1_2", "x86_64"): {"download_file": ("linux", "x86_64")},
+    ("musllinux_1_2", "aarch64"): {"download_file": ("linux", "arm64")},
+    ("manylinux_2_17", "x86_64"): {"download_file": ("linux", "x86_64")},
+    ("manylinux_2_17", "aarch64"): {"download_file": ("linux", "arm64")},
+    ("macosx_10_9", "x86_64"): {"download_file": ("darwin", "x86_64")},
+    ("macosx_11_0", "arm64"): {"download_file": ("darwin", "arm64")},
+    ("win", "amd64"): {"download_file": ("windows", "x86_64")},
+    ("win", "arm64"): {"download_file": ("windows", "arm64")},
+}
 
 
 class SpecialBuildHook(BuildHookInterface):
@@ -27,24 +37,14 @@ class SpecialBuildHook(BuildHookInterface):
         if self.target_name != "wheel":
             return
 
-        target_arch = os.environ.get("CIBW_ARCHS", platform.machine()).lower()
-        target_os_info = os.environ.get("CIBW_PLATFORM", sys.platform).lower()
+        target_arch = os.environ.get("CIBW_ARCHS", None)
+        target_os_info = os.environ.get("CIBW_PLATFORM", None)
 
-        if target_arch not in ["x86_64", "arm64", "aarch64"]:
-            raise NotImplementedError(f"no support arch: {target_arch}")
+        assert target_arch is not None, f"CIBW_ARCHS not set see: {BUILD_TARGET}"
+        assert target_os_info is not None, f"CIBW_PLATFORM not set see: {BUILD_TARGET}"
 
-        if not any(os_name in target_os_info for os_name in ["linux", "darwin", "macos", "win"]):
-            raise NotImplementedError(f"no support os: {target_os_info}")
-
-        # 检查系统和架构的组合
-        if target_os_info in ["win"] and target_arch == "x86_64":
-            target_arch = "amd64"
-        elif target_os_info in ["linux"] and target_arch == "arm64":
-            target_arch = "aarch64"
-        if target_os_info in ["darwin", "macos"]:
-            target_os_info = f"macosx_{'10_9' if target_arch == 'x86_64' else '11_0'}"
-            if target_arch == "aarch64":
-                target_arch = "arm64"
+        if (target_os_info, target_arch) not in BUILD_TARGET:
+            raise ValueError(f"Unsupported target: {target_os_info}, {target_arch}")
 
         # 构建完整的 Wheel 标签
         full_wheel_tag = f"py3-none-{target_os_info}_{target_arch}"
@@ -72,21 +72,13 @@ class SpecialBuildHook(BuildHookInterface):
 
     def download_yamlfmt(self, target_os_info: str, target_arch: str) -> None:
         """Download the yamlfmt binary for the specified OS and architecture."""
-        target_os_info_to_go_os = {
-            "macosx_10_9": "Darwin",
-            "macosx_11_0": "Darwin",
-            "win": "Windows",
-        }
-        target_arch_to_go_arch = {
-            "amd64": "x86_64",
-            "aarch64": "arm64",
-        }
-        file_path = self.temp_dir / f"{self.BIN_NAME}_{target_os_info}_{target_arch}.tar.gz"
+        download_target = BUILD_TARGET[(target_os_info, target_arch)]["download_file"]
+        file_path = self.temp_dir / f"{self.BIN_NAME}_{download_target[0]}_{download_target[1]}.tar.gz"
         request.urlretrieve(
             self.YAMLFMT_REPO.format(
                 version=re.sub(r"[ab]\d+$", "", self.metadata.version),  # 去掉版本号中的后缀, alpha/beta
-                target_os_info=target_os_info_to_go_os.get(target_os_info, target_os_info),
-                target_arch=target_arch_to_go_arch.get(target_arch, target_arch),
+                target_os_info=download_target[0],
+                target_arch=download_target[1],
             ),
             file_path,
         )
