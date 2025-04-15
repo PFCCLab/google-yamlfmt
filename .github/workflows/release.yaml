@@ -33,6 +33,9 @@ jobs:
           python-version: "3.x"
 
       - name: build release distributions
+        env:
+          CIBW_ARCHS: ${{ matrix.platform.target }}
+          CIBW_PLATFORM: ${{ matrix.platform.os }}
         run: |
           uv build
 
