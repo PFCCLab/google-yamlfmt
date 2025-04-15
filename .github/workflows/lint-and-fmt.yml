@@ -30,6 +30,9 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install dependencies
+        env:
+          CIBW_ARCHS: "x86_64"
+          CIBW_PLATFORM: "manylinux_2_17"
         run: |
           uv sync --all-extras --dev
 
