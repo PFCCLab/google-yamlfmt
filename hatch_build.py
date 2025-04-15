@@ -54,8 +54,15 @@ class SpecialBuildHook(BuildHookInterface):
 
         # 解压缩文件
         with tarfile.open(tar_gz_file, "r:gz") as tar:
-            assert self.BIN_NAME in tar.getnames()
-            tar.extract(self.BIN_NAME, path=self.temp_dir)
+            if target_os_info == "win":
+                # Windows 上的文件名是 yamlfmt.exe
+                assert f"{self.BIN_NAME}.exe" in tar.getnames()
+                tar.extract(f"{self.BIN_NAME}.exe", path=self.temp_dir)
+                # 重命名为 yamlfmt
+                (self.temp_dir / f"{self.BIN_NAME}.exe").rename(self.temp_dir / self.BIN_NAME)
+            else:
+                assert self.BIN_NAME in tar.getnames()
+                tar.extract(self.BIN_NAME, path=self.temp_dir)
 
         # TODO: 加一个 sum 校验
         bin_path = self.temp_dir / self.BIN_NAME
