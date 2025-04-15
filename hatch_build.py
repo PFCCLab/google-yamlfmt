@@ -38,9 +38,14 @@ class SpecialBuildHook(BuildHookInterface):
         # 检查系统和架构的组合
         if target_os_info in ["win"] and target_arch == "x86_64":
             target_arch = "amd64"
-        elif target_os_info in ["linux"] and target_arch == "arm64":
-            target_arch = "aarch64"
+        elif target_os_info in ["linux"]:
+            if target_arch == "arm64":
+                target_arch = "aarch64"
+            elif target_arch == "amd64":
+                target_arch = "x86_64"
         if target_os_info in ["darwin", "macos"]:
+            if target_arch == "amd64":
+                target_arch = "x86_64"
             target_os_info = f"macosx_{'10_9' if target_arch == 'x86_64' else '11_0'}"
             if target_arch == "aarch64":
                 target_arch = "arm64"
