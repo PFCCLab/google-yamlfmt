@@ -12,12 +12,14 @@ jobs:
     strategy:
       matrix:
         platform:
-          - {"runner": "ubuntu-latest", "os": "linux", "target": "x86_64"}
-          - {"runner": "ubuntu-latest", "os": "linux", "target": "aarch64"}
-          - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
-          - {"runner": "windows-latest", "os": "win", "target": "arm64"}
-          - {"runner": "macos-latest", "os": "macos", "target": "x86_64"}
-          - {"runner": "macos-latest", "os": "macos", "target": "arm64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "aarch64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "aarch64"}
+          - {"runner": "windows-latest", "platform_tag": "win", "arch": "amd64"}
+          - {"runner": "windows-latest", "platform_tag": "win", "arch": "arm64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_10_9", "arch": "x86_64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_11_0", "arch": "arm64"}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,15 +34,15 @@ jobs:
 
       - name: build release distributions
         env:
-          CIBW_ARCHS: ${{ matrix.platform.target }}
-          CIBW_PLATFORM: ${{ matrix.platform.os }}
+          CIBW_ARCHS: ${{ matrix.platform.arch }}
+          CIBW_PLATFORM: ${{ matrix.platform.platform_tag }}
         run: |
           uv build
 
       - name: upload dists
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.os }}-${{ matrix.platform.target }}
+          name: ${{ matrix.platform.platform_tag }}-${{ matrix.platform.arch }}
           path: dist/
 
   publish-pypi:
@@ -54,17 +56,19 @@ jobs:
     strategy:
       matrix:
         platform:
-          - {"runner": "ubuntu-latest", "os": "linux", "target": "x86_64"}
-          - {"runner": "ubuntu-latest", "os": "linux", "target": "aarch64"}
-          - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
-          - {"runner": "windows-latest", "os": "win", "target": "arm64"}
-          - {"runner": "macos-latest", "os": "macos", "target": "x86_64"}
-          - {"runner": "macos-latest", "os": "macos", "target": "arm64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "aarch64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "aarch64"}
+          - {"runner": "windows-latest", "platform_tag": "win", "arch": "amd64"}
+          - {"runner": "windows-latest", "platform_tag": "win", "arch": "arm64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_10_9", "arch": "x86_64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_11_0", "arch": "arm64"}
     steps:
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.platform.os }}-${{ matrix.platform.target }}
+          name: ${{ matrix.platform.platform_tag }}-${{ matrix.platform.arch }}
           path: dist/
 
       - name: Install uv
@@ -84,16 +88,18 @@ jobs:
     strategy:
       matrix:
         platform:
-          - {"runner": "ubuntu-latest", "os": "linux", "target": "x86_64"}
-          - {"runner": "ubuntu-latest", "os": "linux", "target": "aarch64"}
-          - {"runner": "windows-latest", "os": "win", "target": "x86_64"}
-          - {"runner": "windows-latest", "os": "win", "target": "arm64"}
-          - {"runner": "macos-latest", "os": "macos", "target": "x86_64"}
-          - {"runner": "macos-latest", "os": "macos", "target": "arm64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "aarch64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "aarch64"}
+          - {"runner": "windows-latest", "platform_tag": "win", "arch": "amd64"}
+          - {"runner": "windows-latest", "platform_tag": "win", "arch": "arm64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_10_9", "arch": "x86_64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_11_0", "arch": "arm64"}
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.platform.os }}-${{ matrix.platform.target }}
+          name: ${{ matrix.platform.platform_tag }}-${{ matrix.platform.arch }}
           path: dist/
       - name: Get tag name
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
