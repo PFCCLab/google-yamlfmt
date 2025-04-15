@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import platform
+import re
 import shutil
 import sys
 import tarfile
@@ -83,7 +84,7 @@ class SpecialBuildHook(BuildHookInterface):
         file_path = self.temp_dir / f"{self.BIN_NAME}_{target_os_info}_{target_arch}.tar.gz"
         request.urlretrieve(
             self.YAMLFMT_REPO.format(
-                version=self.metadata.version,
+                version=re.sub(r"[ab]\d+$", "", self.metadata.version),  # 去掉版本号中的后缀, alpha/beta
                 target_os_info=target_os_info_to_go_os.get(target_os_info, target_os_info),
                 target_arch=target_arch_to_go_arch.get(target_arch, target_arch),
             ),
