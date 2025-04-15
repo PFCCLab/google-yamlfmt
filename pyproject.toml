@@ -10,7 +10,7 @@ dependencies = []
 [project.urls]
 Homepage = "https://github.com/PFCCLab/google-yamlfmt"
 Repository = "https://github.com/PFCCLab/google-yamlfmt"
-Issue = "https://github.com/PFCCLab/google-yamlfmt/issues"
+Issues = "https://github.com/PFCCLab/google-yamlfmt/issues"
 
 [dependency-groups]
 dev = [
