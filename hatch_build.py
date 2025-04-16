@@ -76,7 +76,9 @@ class SpecialBuildHook(BuildHookInterface):
         file_path = self.temp_dir / f"{self.BIN_NAME}_{download_target[0]}_{download_target[1]}.tar.gz"
         request.urlretrieve(
             self.YAMLFMT_REPO.format(
-                version=re.sub(r"[ab]\d+$", "", self.metadata.version),  # 去掉版本号中的后缀, alpha/beta
+                version=re.sub(
+                    r"(?:a|b|rc)\d+|\.post\d+|\.dev\d+$", "", self.metadata.version
+                ),  # 去掉版本号中的后缀, alpha/beta/rc/post/dev
                 target_os_info=download_target[0],
                 target_arch=download_target[1],
             ),
