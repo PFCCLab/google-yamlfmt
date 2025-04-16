@@ -43,7 +43,7 @@ jobs:
       - name: upload dists
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.platform_tag }}-${{ matrix.platform.arch }}
+          name: wheels-${{ matrix.platform.platform_tag }}-${{ matrix.platform.arch }}
           path: dist/*.whl
 
   sdist:
@@ -67,7 +67,7 @@ jobs:
       - name: upload dists
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.platform_tag }}-${{ matrix.platform.arch }}
+          name: wheels-sdist
           path: dist/google_yamlfmt-*.tar.gz
 
   publish-pypi:
@@ -83,7 +83,7 @@ jobs:
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
         with:
-          pattern: google_yamlfmt-*
+          pattern: wheels-*
           merge-multiple: true
           path: dist/
 
@@ -104,7 +104,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: google_yamlfmt-*
+          pattern: wheels-*
           merge-multiple: true
           path: dist/
       - name: Get tag name
