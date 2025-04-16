@@ -1,10 +1,10 @@
 [project]
 name = "google-yamlfmt"
-version = "0.16.0-post.0"
+version = "0.16.0-post.1"
 description = "A tool for formatting YAML files, yamlfmt from Google: https://github.com/google/yamlfmt"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 dependencies = []
 
 [project.urls]
@@ -38,7 +38,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py38"
 
 [tool.ruff.lint]
 select = [

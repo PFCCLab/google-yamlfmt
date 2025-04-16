@@ -7,7 +7,7 @@ google-yamlfmt 是一个二次打包 [yamlfmt](https://github.com/google/yamlfmt
 
 ## 安装
 
-要安装 google-yamlfmt，请确保您的 Python 版本为 3.9 或更高，然后运行以下命令：
+要安装 google-yamlfmt，请确保您的 Python 版本为 3.8 或更高，然后运行以下命令：
 
 ```bash
 pip install google-yamlfmt
