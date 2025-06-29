@@ -4,7 +4,7 @@ version = "0.16.0-post.1"
 description = "A tool for formatting YAML files, yamlfmt from Google: https://github.com/google/yamlfmt"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = []
 
 [project.urls]
@@ -13,9 +13,7 @@ Repository = "https://github.com/PFCCLab/google-yamlfmt"
 Issues = "https://github.com/PFCCLab/google-yamlfmt/issues"
 
 [dependency-groups]
-dev = [
-    "hatchling>=1.27.0",
-]
+dev = ["hatchling>=1.27.0"]
 
 [project.scripts]
 yamlfmt = "yamlfmt.__main__:main"

@@ -3,11 +3,12 @@
 google-yamlfmt 是一个二次打包 [yamlfmt](https://github.com/google/yamlfmt) 的仓库。
 
 ## 特性
+
 - 可以使用 pip 或任意 python 包管理工具安装
 
 ## 安装
 
-要安装 google-yamlfmt，请确保您的 Python 版本为 3.8 或更高，然后运行以下命令：
+要安装 google-yamlfmt，请确保您的 Python 版本为 3.9 或更高，然后运行以下命令：
 
 ```bash
 pip install google-yamlfmt
