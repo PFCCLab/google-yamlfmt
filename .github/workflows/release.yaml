@@ -14,12 +14,14 @@ jobs:
       matrix:
         platform:
           - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "x86_64"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "i686"}
+          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "armv7l"}
           - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "aarch64"}
           - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "x86_64"}
           - {"runner": "ubuntu-latest", "platform_tag": "manylinux_2_17", "arch": "aarch64"}
           - {"runner": "windows-latest", "platform_tag": "win", "arch": "amd64"}
           - {"runner": "windows-latest", "platform_tag": "win", "arch": "arm64"}
-          - {"runner": "macos-latest", "platform_tag": "macosx_10_9", "arch": "x86_64"}
+          - {"runner": "macos-latest", "platform_tag": "macosx_10_12", "arch": "x86_64"}
           - {"runner": "macos-latest", "platform_tag": "macosx_11_0", "arch": "arm64"}
     steps:
       - name: Checkout
