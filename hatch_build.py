@@ -90,9 +90,8 @@ class SpecialBuildHook(BuildHookInterface):
         # 编译
         env = os.environ.copy()
         env.update({"GOOS": build_target[0], "GOARCH": build_target[1]})
-        match target_arch:
-            case "armv7l":
-                env.update({"GOARM": "7"})
+        if target_arch == "armv7l":
+            env.update({"GOARM": "7"})
 
         # 检查工作目录是否存在
         work_dir = self.temp_dir / f"yamlfmt-{version}"
