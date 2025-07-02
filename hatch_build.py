@@ -12,15 +12,15 @@ from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 # key 为 pypi 分发的系统和架构组合
 BUILD_TARGET = {
-    ("musllinux_1_2", "x86_64"): ("linux", "x86_64"),
+    ("musllinux_1_2", "x86_64"): ("linux", "amd64"),
     ("musllinux_1_2", "i686"): ("linux", "386"),
     ("musllinux_1_2", "armv7l"): ("linux", "arm"),
     ("musllinux_1_2", "aarch64"): ("linux", "arm64"),
-    ("manylinux_2_17", "x86_64"): ("linux", "x86_64"),
+    ("manylinux_2_17", "x86_64"): ("linux", "amd64"),
     ("manylinux_2_17", "aarch64"): ("linux", "arm64"),
-    ("macosx_10_12", "x86_64"): ("darwin", "x86_64"),
+    ("macosx_10_12", "x86_64"): ("darwin", "amd64"),
     ("macosx_11_0", "arm64"): ("darwin", "arm64"),
-    ("win", "amd64"): ("windows", "x86_64"),
+    ("win", "amd64"): ("windows", "amd64"),
     ("win", "arm64"): ("windows", "arm64"),
 }
 
