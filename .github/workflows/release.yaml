@@ -28,6 +28,7 @@ jobs:
 
       - name: Install package in development mode
         run: |
+          uv venv --python=${{ matrix.python-version }}
           uv pip install -e .
 
       - name: Run cross-platform tests
