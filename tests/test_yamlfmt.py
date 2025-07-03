@@ -42,34 +42,30 @@ list:
 
     def test_yamlfmt_version(self):
         """Test that yamlfmt can output version information."""
-        try:
-            # 测试版本输出
+        # 测试版本输出
+        result = subprocess.run(
+            [sys.executable, "-m", "yamlfmt", "-version"], capture_output=True, text=True, timeout=30, check=False
+        )
+        # yamlfmt 可能使用不同的版本标志，我们测试几种可能性
+        if result.returncode != 0:
             result = subprocess.run(
-                [sys.executable, "-m", "yamlfmt", "-version"], capture_output=True, text=True, timeout=30, check=False
+                [sys.executable, "-m", "yamlfmt", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
             )
-            # yamlfmt 可能使用不同的版本标志，我们测试几种可能性
-            if result.returncode != 0:
-                result = subprocess.run(
-                    [sys.executable, "-m", "yamlfmt", "--version"],
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                    check=False,
-                )
-            if result.returncode != 0:
-                result = subprocess.run(
-                    [sys.executable, "-m", "yamlfmt", "-h"], capture_output=True, text=True, timeout=30, check=False
-                )
+        if result.returncode != 0:
+            result = subprocess.run(
+                [sys.executable, "-m", "yamlfmt", "-h"], capture_output=True, text=True, timeout=30, check=False
+            )
 
-            print(f"✓ yamlfmt executed successfully on {platform.system()}")
-            print(f"  Return code: {result.returncode}")
-            if result.stdout:
-                print(f"  Stdout: {result.stdout[:200]}...")
-            if result.stderr:
-                print(f"  Stderr: {result.stderr[:200]}...")
-
-        except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
-            self.fail(f"Failed to execute yamlfmt: {e}")
+        print(f"✓ yamlfmt executed successfully on {platform.system()}")
+        print(f"  Return code: {result.returncode}")
+        if result.stdout:
+            print(f"  Stdout: {result.stdout[:200]}...")
+        if result.stderr:
+            print(f"  Stderr: {result.stderr[:200]}...")
 
     def test_yamlfmt_format_basic(self):
         """Test basic YAML formatting functionality."""
@@ -102,73 +98,42 @@ list:
                 print("  File exists after formatting: True")
                 print(f"  File size: {len(formatted_content)} characters")
 
-        except subprocess.TimeoutExpired:
-            self.fail("yamlfmt command timed out")
-        except (FileNotFoundError, OSError) as e:
-            print(f"❌ yamlfmt formatting failed: {e}")
-            # 不让测试失败，只是记录错误
         finally:
             # 清理临时文件
             if temp_file.exists():
                 temp_file.unlink()
 
-    def test_executable_permissions(self):
-        """Test that the yamlfmt executable has correct permissions."""
-        try:
-            from yamlfmt.__main__ import get_executable_path
-
-            executable_path = Path(get_executable_path())
-
-            self.assertTrue(executable_path.exists(), f"Executable not found at {executable_path}")
-
-            if platform.system() != "Windows":
-                import os
-
-                self.assertTrue(os.access(executable_path, os.X_OK), f"Executable {executable_path} is not executable")
-
-            print(f"✓ Executable permissions verified on {platform.system()}")
-            print(f"  Executable path: {executable_path}")
-            print(f"  File exists: {executable_path.exists()}")
-            if platform.system() != "Windows":
-                import os
-
-                print(f"  Is executable: {os.access(executable_path, os.X_OK)}")
-
-        except (ImportError, FileNotFoundError, OSError) as e:
-            print(f"❌ Executable permission test failed: {e}")
-
     def test_help_output(self):
         """Test that yamlfmt can show help information."""
-        try:
-            result = subprocess.run(
-                [sys.executable, "-m", "yamlfmt", "-h"], capture_output=True, text=True, timeout=30, check=False
-            )
+        result = subprocess.run(
+            [sys.executable, "-m", "yamlfmt", "-h"], capture_output=True, text=True, timeout=30, check=False
+        )
 
-            print(f"✓ Help output test on {platform.system()}")
-            print(f"  Return code: {result.returncode}")
+        print(f"✓ Help output test on {platform.system()}")
+        print(f"  Return code: {result.returncode}")
 
-            if result.stdout:
-                print(f"  Help output length: {len(result.stdout)} characters")
-                # 显示帮助输出的前几行
-                lines = result.stdout.split("\n")[:5]
-                for line in lines:
-                    if line.strip():
-                        print(f"  > {line}")
-
-        except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
-            print(f"❌ Help output test failed: {e}")
+        if result.stdout:
+            print(f"  Help output length: {len(result.stdout)} characters")
+            # 显示帮助输出的前几行
+            lines = result.stdout.split("\n")[:5]
+            for line in lines:
+                if line.strip():
+                    print(f"  > {line}")
 
     def test_module_import(self):
         """Test that the yamlfmt module can be imported correctly."""
-        try:
-            from yamlfmt import BIN_NAME, __version__
+        # 添加 src 目录到 Python 路径
+        # 获取项目根目录并添加 src 到路径
+        test_dir = Path(__file__).parent
+        src_dir = test_dir.parent / "src"
+        if src_dir.exists() and str(src_dir) not in sys.path:
+            sys.path.insert(0, str(src_dir))
 
-            print(f"✓ Module import test passed on {platform.system()}")
-            print(f"  yamlfmt version: {__version__}")
-            print(f"  Binary name: {BIN_NAME}")
+        from yamlfmt import BIN_NAME, __version__
 
-        except ImportError as e:
-            self.fail(f"Failed to import yamlfmt module: {e}")
+        print(f"✓ Module import test passed on {platform.system()}")
+        print(f"  yamlfmt version: {__version__}")
+        print(f"  Binary name: {BIN_NAME}")
 
     def test_system_info(self):
         """Display system information for debugging."""

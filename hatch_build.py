@@ -117,5 +117,8 @@ class SpecialBuildHook(BuildHookInterface):
 
     def finalize(self, version, build_data, artifact_path):
         # 清理临时目录
-        shutil.rmtree(self.temp_dir)
+        try:
+            shutil.rmtree(self.temp_dir)
+        except (OSError, PermissionError) as e:
+            print(f"Warning: Failed to remove temp directory {self.temp_dir}: {e}")
         super().finalize(version, build_data, artifact_path)
