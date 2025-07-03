@@ -36,7 +36,7 @@ jobs:
 
       - name: Run cross-platform tests
         run: |
-          python tests/test_yamlfmt.py
+          uv run tests/test_yamlfmt.py
 
   release-build:
     runs-on: ${{ matrix.platform.runner }}
