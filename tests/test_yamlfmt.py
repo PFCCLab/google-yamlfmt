@@ -38,7 +38,6 @@ list:
         """Test that we can detect the current platform."""
         current_platform = platform.system()
         self.assertIn(current_platform, ["Linux", "Darwin", "Windows"])
-        print(f"✓ Platform detected: {current_platform}")
 
     def test_yamlfmt_version(self):
         """Test that yamlfmt can output version information."""
@@ -60,12 +59,7 @@ list:
                 [sys.executable, "-m", "yamlfmt", "-h"], capture_output=True, text=True, timeout=30, check=False
             )
 
-        print(f"✓ yamlfmt executed successfully on {platform.system()}")
-        print(f"  Return code: {result.returncode}")
-        if result.stdout:
-            print(f"  Stdout: {result.stdout[:200]}...")
-        if result.stderr:
-            print(f"  Stderr: {result.stderr[:200]}...")
+        assert result.returncode == 0, f"yamlfmt failed with exit code {result.returncode}"
 
     def test_yamlfmt_format_basic(self):
         """Test basic YAML formatting functionality."""
@@ -83,20 +77,12 @@ list:
                 check=False,
             )
 
-            print(f"✓ yamlfmt formatting test completed on {platform.system()}")
-            print(f"  Return code: {result.returncode}")
-            print(f"  Command: python -m yamlfmt {temp_file}")
+            assert result.returncode == 0, f"yamlfmt failed with exit code {result.returncode}"
 
-            if result.stdout:
-                print(f"  Stdout: {result.stdout}")
-            if result.stderr:
-                print(f"  Stderr: {result.stderr}")
+            assert result.stderr == "", "No output from yamlfmt"
 
             # 检查格式化后的文件
-            if temp_file.exists():
-                formatted_content = temp_file.read_text(encoding="utf-8")
-                print("  File exists after formatting: True")
-                print(f"  File size: {len(formatted_content)} characters")
+            assert temp_file.is_file(), f"Temporary file {temp_file} does not exist after formatting"
 
         finally:
             # 清理临时文件
@@ -109,16 +95,11 @@ list:
             [sys.executable, "-m", "yamlfmt", "-h"], capture_output=True, text=True, timeout=30, check=False
         )
 
-        print(f"✓ Help output test on {platform.system()}")
-        print(f"  Return code: {result.returncode}")
+        assert result.returncode == 0, f"yamlfmt help command failed with exit code {result.returncode}"
 
-        if result.stdout:
-            print(f"  Help output length: {len(result.stdout)} characters")
-            # 显示帮助输出的前几行
-            lines = result.stdout.split("\n")[:5]
-            for line in lines:
-                if line.strip():
-                    print(f"  > {line}")
+        assert "yamlfmt is a simple command line tool for formatting yaml files." in result.stdout, (
+            "Help output does not contain usage information"
+        )
 
     def test_module_import(self):
         """Test that the yamlfmt module can be imported correctly."""
@@ -131,9 +112,8 @@ list:
 
         from yamlfmt import BIN_NAME, __version__
 
-        print(f"✓ Module import test passed on {platform.system()}")
-        print(f"  yamlfmt version: {__version__}")
-        print(f"  Binary name: {BIN_NAME}")
+        assert BIN_NAME == "yamlfmt", f"Expected BIN_NAME to be 'yamlfmt', got {BIN_NAME}"
+        assert __version__, "Expected yamlfmt version to be set"
 
     def test_system_info(self):
         """Display system information for debugging."""
@@ -155,38 +135,5 @@ list:
         print("=" * 50)
 
 
-def run_tests():
-    """Run all tests with verbose output."""
-    print("Starting yamlfmt cross-platform tests...")
-    print(f"Running on: {platform.system()} {platform.release()}")
-    print("-" * 60)
-
-    # 创建测试套件
-    loader = unittest.TestLoader()
-    suite = loader.loadTestsFromTestCase(TestYamlfmtOutput)
-
-    # 运行测试
-    runner = unittest.TextTestRunner(verbosity=2, stream=sys.stdout)
-    result = runner.run(suite)
-
-    print("-" * 60)
-    print(f"Tests run: {result.testsRun}")
-    print(f"Failures: {len(result.failures)}")
-    print(f"Errors: {len(result.errors)}")
-
-    if result.failures:
-        print("\nFAILURES:")
-        for test, traceback in result.failures:
-            print(f"- {test}: {traceback}")
-
-    if result.errors:
-        print("\nERRORS:")
-        for test, traceback in result.errors:
-            print(f"- {test}: {traceback}")
-
-    return result.wasSuccessful()
-
-
 if __name__ == "__main__":
-    success = run_tests()
-    sys.exit(0 if success else 1)
+    unittest.main()
