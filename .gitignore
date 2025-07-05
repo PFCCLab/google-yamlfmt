@@ -14,5 +14,3 @@ wheels/
 # Configuration files
 src/yamlfmt/yamlfmt
 src/yamlfmt/_version.py
-
-uv.lock
