@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -49,20 +50,20 @@ class SpecialBuildHook(BuildHookInterface):
         if self.target_name != "wheel":
             return
 
-        target_arch = (
-            os.environ.get("CIBW_ARCHS")
-            or PY_PLATFORM_MAPPING.get((os.uname().sysname, os.uname().machine), (None, None))[1]
-        )
-        target_os_info = (
-            os.environ.get("CIBW_PLATFORM")
-            or PY_PLATFORM_MAPPING.get((os.uname().sysname, os.uname().machine), (None, None))[0]
-        )
+        # 获取系统信息
+        system_info = get_system_info()
+        default_os_mapping = (None, None)
 
+        # 获取目标架构和平台信息
+        target_arch = os.environ.get("CIBW_ARCHS") or PY_PLATFORM_MAPPING.get(system_info, default_os_mapping)[1]
+        target_os_info = os.environ.get("CIBW_PLATFORM") or PY_PLATFORM_MAPPING.get(system_info, default_os_mapping)[0]
+
+        # 确保目标架构和平台信息有效
         assert target_arch is not None, (
-            f"CIBW_ARCHS not set and no mapping found in PY_PLATFORM_MAPPING for: {os.uname().sysname}, {os.uname().machine}"
+            f"CIBW_ARCHS not set and no mapping found in PY_PLATFORM_MAPPING for: {system_info}"
         )
         assert target_os_info is not None, (
-            f"CIBW_PLATFORM not set and no mapping found in PY_PLATFORM_MAPPING for: {os.uname().sysname}, {os.uname().machine}"
+            f"CIBW_PLATFORM not set and no mapping found in PY_PLATFORM_MAPPING for: {system_info}"
         )
 
         assert (target_os_info, target_arch) in BUILD_TARGET, f"Unsupported target: {target_os_info}, {target_arch}"
@@ -141,3 +142,9 @@ class SpecialBuildHook(BuildHookInterface):
         except (OSError, PermissionError) as e:
             print(f"Warning: Failed to remove temp directory {self.temp_dir}: {e}")
         super().finalize(version, build_data, artifact_path)
+
+
+def get_system_info():
+    system = platform.system()
+    machine = platform.machine()
+    return system, machine
