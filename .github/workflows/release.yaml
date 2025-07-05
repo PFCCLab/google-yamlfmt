@@ -34,22 +34,21 @@ jobs:
           uv venv
           uv build
 
-      - name: Install package
+      - name: Install package and test
         if: matrix.platform.runner != 'windows-latest'
         run: |
           source .venv/bin/activate
           uv pip install --no-deps --force-reinstall dist/*.whl
+          python tests/test_yamlfmt.py
 
-      - name: Install package on Windows
+      - name: Install package on Windows and test
         if: matrix.platform.runner == 'windows-latest'
         run: |
+          .venv\Scripts\activate.ps1
           $whl = Get-ChildItem dist\*.whl | Select-Object -First 1
           uv pip install --no-deps --force-reinstall $whl.FullName
+          python tests\test_yamlfmt.py
 
-      - name: Run cross-platform tests
-        run: |
-          source .venv/bin/activate
-          python tests/test_yamlfmt.py
 
   release-build:
     runs-on: ${{ matrix.platform.runner }}
