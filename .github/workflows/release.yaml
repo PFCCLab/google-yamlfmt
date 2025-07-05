@@ -26,14 +26,25 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Install package in development mode
+      - name: Build package
         env:
           CIBW_ARCHS: ${{ matrix.platform.arch }}
           CIBW_PLATFORM: ${{ matrix.platform.platform_tag }}
         run: |
           uv venv
           uv build
+
+      - name: Install package
+        if: matrix.platform.runner != 'windows-latest'
+        run: |
+          source .venv/bin/activate
           uv pip install --no-deps --force-reinstall dist/*.whl
+
+      - name: Install package on Windows
+        if: matrix.platform.runner == 'windows-latest'
+        run: |
+          $whl = Get-ChildItem dist\*.whl | Select-Object -First 1
+          uv pip install --no-deps --force-reinstall $whl.FullName
 
       - name: Run cross-platform tests
         run: |
