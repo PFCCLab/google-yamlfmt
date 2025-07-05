@@ -9,13 +9,10 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.platform.runner }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        platform:
-          - {"runner": "ubuntu-latest", "platform_tag": "musllinux_1_2", "arch": "x86_64"}
-          - {"runner": "windows-latest", "platform_tag": "win", "arch": "amd64"}
-          - {"runner": "macos-latest", "platform_tag": "macosx_11_0", "arch": "arm64"}
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,22 +24,19 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Build package
-        env:
-          CIBW_ARCHS: ${{ matrix.platform.arch }}
-          CIBW_PLATFORM: ${{ matrix.platform.platform_tag }}
         run: |
           uv venv
           uv build
 
       - name: Install package and test
-        if: matrix.platform.runner != 'windows-latest'
+        if: matrix.os != 'windows-latest'
         run: |
           source .venv/bin/activate
           uv pip install --no-deps --force-reinstall dist/*.whl
           python tests/test_yamlfmt.py
 
       - name: Install package on Windows and test
-        if: matrix.platform.runner == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         run: |
           .venv\Scripts\activate.ps1
           $whl = Get-ChildItem dist\*.whl | Select-Object -First 1
