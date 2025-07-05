@@ -37,6 +37,7 @@ jobs:
 
       - name: Run cross-platform tests
         run: |
+          source .venv/bin/activate
           python tests/test_yamlfmt.py
 
   release-build:
