@@ -10,6 +10,17 @@ from typing import Any
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
+PY_PLATFORM_MAPPING = {
+    ("Linux", "x86_64"): ("musllinux_1_2", "x86_64"),
+    ("Linux", "i686"): ("musllinux_1_2", "i686"),
+    ("Linux", "armv7l"): ("musllinux_1_2", "armv7l"),
+    ("Linux", "aarch64"): ("musllinux_1_2", "aarch64"),
+    ("Darwin", "x86_64"): ("macosx_10_12", "x86_64"),
+    ("Darwin", "arm64"): ("macosx_11_0", "arm64"),
+    ("Windows", "AMD64"): ("win", "amd64"),
+    ("Windows", "ARM64"): ("win", "arm64"),
+}
+
 # key 为 pypi 分发的系统和架构组合
 BUILD_TARGET = {
     ("musllinux_1_2", "x86_64"): ("linux", "amd64"),
@@ -38,11 +49,21 @@ class SpecialBuildHook(BuildHookInterface):
         if self.target_name != "wheel":
             return
 
-        target_arch = os.environ.get("CIBW_ARCHS", None)
-        target_os_info = os.environ.get("CIBW_PLATFORM", None)
+        target_arch = (
+            os.environ.get("CIBW_ARCHS")
+            or PY_PLATFORM_MAPPING.get((os.uname().sysname, os.uname().machine), (None, None))[1]
+        )
+        target_os_info = (
+            os.environ.get("CIBW_PLATFORM")
+            or PY_PLATFORM_MAPPING.get((os.uname().sysname, os.uname().machine), (None, None))[0]
+        )
 
-        assert target_arch is not None, f"CIBW_ARCHS not set see: {BUILD_TARGET}"
-        assert target_os_info is not None, f"CIBW_PLATFORM not set see: {BUILD_TARGET}"
+        assert target_arch is not None, (
+            f"CIBW_ARCHS not set and no mapping found in PY_PLATFORM_MAPPING for: {os.uname().sysname}, {os.uname().machine}"
+        )
+        assert target_os_info is not None, (
+            f"CIBW_PLATFORM not set and no mapping found in PY_PLATFORM_MAPPING for: {os.uname().sysname}, {os.uname().machine}"
+        )
 
         assert (target_os_info, target_arch) in BUILD_TARGET, f"Unsupported target: {target_os_info}, {target_arch}"
 
@@ -97,16 +118,14 @@ class SpecialBuildHook(BuildHookInterface):
         work_dir = self.temp_dir / f"yamlfmt-{version}"
         assert work_dir.exists(), f"Working directory {work_dir} does not exist"
 
-        res = subprocess.run(
+        subprocess.run(
             ["make", "build"],
             env=env,
             cwd=work_dir,
             capture_output=True,
             text=True,
-            check=False,
+            check=True,
         )
-
-        assert res.returncode == 0, f"Go build failed with exit code {res.returncode}: {res.stderr or res.stdout}"
 
         # 检查生成的二进制文件是否存在
         bin_path = work_dir / "dist" / self.BIN_NAME
