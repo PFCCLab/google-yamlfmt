@@ -8,6 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
-src/yamlfmt/_version.py
 .python-version
 .ruff_cache
+
+# Configuration files
+src/yamlfmt/yamlfmt
+src/yamlfmt/_version.py
