@@ -9,6 +9,7 @@ on:
 
 jobs:
   lint-and-fmt-python:
+    if: github.repository == 'PFCCLab/google-yamlfmt'
     runs-on: ubuntu-latest
     strategy:
       matrix:
