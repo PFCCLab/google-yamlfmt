@@ -12,10 +12,10 @@ from typing import Any
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 PY_PLATFORM_MAPPING = {
-    ("Linux", "x86_64"): ("musllinux_1_2", "x86_64"),
-    ("Linux", "i686"): ("musllinux_1_2", "i686"),
-    ("Linux", "armv7l"): ("musllinux_1_2", "armv7l"),
-    ("Linux", "aarch64"): ("musllinux_1_2", "aarch64"),
+    ("Linux", "x86_64"): ("manylinux_2_17", "x86_64"),
+    ("Linux", "i686"): ("manylinux_2_17", "i686"),
+    ("Linux", "armv7l"): ("manylinux_2_17", "armv7l"),
+    ("Linux", "aarch64"): ("manylinux_2_17", "aarch64"),
     ("Darwin", "x86_64"): ("macosx_10_12", "x86_64"),
     ("Darwin", "arm64"): ("macosx_11_0", "arm64"),
     ("Windows", "AMD64"): ("win", "amd64"),
@@ -84,7 +84,7 @@ class SpecialBuildHook(BuildHookInterface):
     def build_yamlfmt(self, target_os_info: str, target_arch: str) -> None:
         """Build the yamlfmt binary for the specified OS and architecture."""
         # 确认环境安装
-        for command in ["go", "make", "git"]:
+        for command in ["go", "git"]:
             assert shutil.which(command), f"{command} is not installed or not found in PATH"
 
         build_target = BUILD_TARGET[(target_os_info, target_arch)]
@@ -108,10 +108,18 @@ class SpecialBuildHook(BuildHookInterface):
             ],
             check=True,
         )
+        # 获取最新的提交哈希
+        commit_hash = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=self.temp_dir / f"yamlfmt-{version}",
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
 
         # 编译
         env = os.environ.copy()
-        env.update({"GOOS": build_target[0], "GOARCH": build_target[1]})
+        env.update({"GOOS": build_target[0], "GOARCH": build_target[1], "CGO_ENABLED": "0"})
         if target_arch == "armv7l":
             env.update({"GOARM": "7"})
 
@@ -120,7 +128,15 @@ class SpecialBuildHook(BuildHookInterface):
         assert work_dir.exists(), f"Working directory {work_dir} does not exist"
 
         subprocess.run(
-            ["make", "build"],
+            [
+                "go",
+                "build",
+                "-ldflags",
+                f"-s -w -X 'main.version={version}' -X 'main.commit={commit_hash}'",
+                "-o",
+                f"dist/{self.BIN_NAME}",
+                "./cmd/yamlfmt",
+            ],
             env=env,
             cwd=work_dir,
             capture_output=True,
