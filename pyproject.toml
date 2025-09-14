@@ -77,11 +77,11 @@ select = [
   "RUF100",
 ]
 ignore = [
-  "E501",  # line too long, duplicate with ruff fmt
-  "F401",  # imported but unused, duplicate with pyright
-  "F841",  # local variable is assigned to but never used, duplicate with pyright
-  "UP038", # It will cause the performance regression on python3.10
+  "E501", # line too long, duplicate with ruff fmt
+  "F401", # imported but unused, duplicate with pyright
+  "F841", # local variable is assigned to but never used, duplicate with pyright
 ]
+future-annotations = true
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
