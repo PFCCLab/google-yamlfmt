@@ -1,6 +1,6 @@
 [project]
 name = "google-yamlfmt"
-version = "0.18.1"
+version = "0.19.0"
 description = "A tool for formatting YAML files, yamlfmt from Google: https://github.com/google/yamlfmt"
 readme = "README.md"
 license = { text = "MIT" }
