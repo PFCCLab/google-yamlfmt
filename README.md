@@ -54,7 +54,7 @@ To use with pre-commit, add this to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/PFCCLab/yamlfmt-pre-commit-mirror.git
-    rev: v0.17.2
+    rev: v0.20.0
     hooks:
       - id: yamlfmt
 ```
